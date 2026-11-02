@@ -1,0 +1,17 @@
+{
+  "threshold": 1,
+  "noTips": true,
+  "reporters": ["ai"],
+  "ignore": [
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/node_modules/**",
+    "**/*.d.ts",
+    "**/.opencode/**",
+    "**/.worktrees/**",
+    "**/*.test.ts",
+    "**/*.test.mts",
+    "**/*.json"
+  ]
+}

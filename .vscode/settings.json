@@ -1,0 +1,25 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize",
+  "editor.detectIndentation": false,
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "git.detectSubmodules": false,
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "search.exclude": {
+    "**/node_modules": true
+  },
+  "workbench.localHistory.exclude": {
+    "**/node_modules": true
+  },
+  "files.exclude": {}
+}

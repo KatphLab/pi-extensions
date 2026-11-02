@@ -1,0 +1,71 @@
+rules:
+  - id: no-eval
+    patterns:
+      - pattern: eval(...)
+    message: Avoid eval - it introduces security and maintenance risk.
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: no-child-process-exec
+    patterns:
+      - pattern-either:
+          - pattern: exec(...)
+          - pattern: execSync(...)
+    message: Avoid exec/execSync in app code; prefer safer alternatives like execFile or spawn.
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  - id: no-hardcoded-secret-like-token
+    patterns:
+      - pattern-regex: "(?i)(api[_-]?key|secret|token)\\s*[:=]\\s*['\"`][A-Za-z0-9_\\-]{16,}['\"`]"
+    message: Potential hardcoded secret detected.
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: no-biome-suppression
+    pattern-regex: '(?m)^[ \t]*(?://|/\*|\*)[^\r\n]*\bbiome-ignore(?:-all|-start|-end)?\b'
+    message: Do not suppress Biome rules; fix the finding instead.
+    languages: [typescript]
+    severity: ERROR
+
+  - id: no-ts-nocheck
+    pattern-regex: '(?m)^[ \t]*(?://|/\*|\*)[^\r\n]*@ts-nocheck\b'
+    message: Do not disable TypeScript checking for a file.
+    languages: [typescript]
+    severity: ERROR
+
+  - id: ts-expect-error-description
+    pattern-regex: '(?m)^[ \t]*//[ \t]*@ts-expect-error[ \t]*:?[ \t]*[^\r\n]{0,9}$'
+    message: Explain @ts-expect-error with at least 10 characters.
+    languages: [typescript]
+    severity: ERROR
+
+  # ponytail: textual checks can match code-like strings; use AST rules when Semgrep supports these types.
+  - id: no-pass-through-reexport
+    pattern-regex: >-
+      (?m)^[ \t]*export\s+(?:type\s+)?(?:\{[^}]*\}|\*(?:\s+as\s+[$\w]+)?)\s+from\s+["']
+    message: Import from the defining module instead of creating pass-through re-exports.
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/*.ts", "**/*.mts"]
+      exclude: ["**/*.test.ts"]
+
+  - id: no-return-type-query
+    pattern-regex: '\bReturnType\s*<\s*typeof\s+[$A-Za-z_][$\w]*\s*>'
+    message: Define and export an explicit type instead of deriving it from a concrete function.
+    languages: [generic]
+    severity: ERROR
+    paths:
+      include: ["**/*.ts", "**/*.mts"]
+      exclude: ["**/*.test.ts"]
+
+  - id: no-todo-tests
+    patterns:
+      - pattern: $TEST.todo(...)
+      - metavariable-regex:
+          metavariable: $TEST
+          regex: "^(it|test|describe)$"
+    message: Do not leave todo tests.
+    languages: [typescript]
+    severity: ERROR

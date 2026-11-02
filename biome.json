@@ -1,0 +1,152 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "noForEach": "error",
+        "noStaticOnlyClass": "error",
+        "noUselessEscapeInRegex": "error",
+        "noUselessUndefined": "error",
+        "useFlatMap": "error",
+        "useWhile": "error",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": {
+            "maxAllowedComplexity": 12
+          }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": {
+            "maxLines": 80,
+            "skipBlankLines": true
+          }
+        },
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 7
+          }
+        },
+        "noUnnecessaryTemplateExpression": "error",
+        "useArraySome": "error",
+        "useRegexpTest": "error"
+      },
+      "nursery": {
+        "noBaseToString": "error",
+        "noFloatingPromises": "error",
+        "noImpliedEval": "error",
+        "noMeaninglessVoidOperator": "error",
+        "noMisusedPromises": "error",
+        "noUnsafePlusOperands": "error",
+        "noUnsafeTypeAssertion": "error",
+        "noUselessTypeConversion": "error",
+        "useAwaitThenable": "error",
+        "useIncludes": "error",
+        "useNullishCoalescing": "error",
+        "usePromiseRejectErrors": "error",
+        "useRegexpExec": "error",
+        "useStringStartsEndsWith": "error"
+      },
+      "performance": {
+        "noBarrelFile": "error",
+        "noReExportAll": "error"
+      },
+      "style": {
+        "useAtIndex": "error",
+        "useConsistentArrayType": "error",
+        "useConsistentEnumValueType": "error",
+        "useExplicitLengthCheck": "error",
+        "useFilenamingConvention": "error",
+        "useForOf": "error",
+        "useNodeAssertStrict": "error",
+        "useNodejsImportProtocol": "error",
+        "useNumberNamespace": "error",
+        "useNumericSeparators": "error",
+        "useReadonlyClassProperties": "error",
+        "useTemplate": "error",
+        "useThrowOnlyError": "error",
+        "useConsistentObjectDefinitions": {
+          "level": "error",
+          "options": {
+            "syntax": "shorthand"
+          }
+        },
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["../**"],
+                "message": "Use path aliases instead of parent-relative imports."
+              }
+            ]
+          }
+        },
+        "useReduceTypeParameter": "error"
+      },
+      "suspicious": {
+        "noFocusedTests": "error",
+        "noSkippedTests": "error",
+        "noDeprecatedImports": "error",
+        "noForIn": "error",
+        "noUnnecessaryConditions": "error",
+        "useArraySortCompare": "error",
+        "useAwait": "error",
+        "useErrorMessage": "error",
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["warn", "error"]
+          }
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.test.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off",
+            "noUselessUndefined": "off"
+          },
+          "performance": { "noBarrelFile": "off", "noReExportAll": "off" },
+          "style": { "noRestrictedImports": "off" },
+          "suspicious": { "noEmptyBlockStatements": "off" }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+.git
+.github
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+Dockerfile
+docker-compose.yml
+*.md
+.env*
+!.env.example
+coverage
+dist

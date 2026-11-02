@@ -1,0 +1,44 @@
+{
+  "name": "ts-bun-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "bun": ">=1.4.4",
+    "node": ">=24.0.0"
+  },
+  "packageManager": "bun@1.4.4",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun run typecheck && bun build --target=bun --outdir=dist src/index.ts",
+    "start": "bun dist/index.js",
+    "lint": "biome check --error-on-warnings .",
+    "fix": "biome check --write --error-on-warnings . && bun run knip:fix",
+    "typecheck": "tsc --noEmit",
+    "check": "bun run lint && bun run typecheck && bun run test:ci && bun run depcruise && bun run knip && bun run dupcheck",
+    "danger:ci": "bun build --target=node --format=esm --packages=external --outfile=node_modules/.cache/dangerfile.js dangerfile.ts && danger ci --dangerfile node_modules/.cache/dangerfile.js",
+    "prepare": "husky",
+    "knip": "knip",
+    "knip:fix": "knip --fix",
+    "depcruise": "depcruise --config .dependency-cruiser.ts src",
+    "dupcheck": "jscpd src",
+    "test": "bun test --timeout 10000",
+    "test:ci": "bun test --timeout 10000 --coverage",
+    "test:watch": "bun test --timeout 10000 --watch",
+    "test:coverage": "bun test --timeout 10000 --coverage"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "@swc/core": "^1.16.21",
+    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.6",
+    "danger": "^14.1.0",
+    "dependency-cruiser": "^18.7.1",
+    "husky": "^9.1.7",
+    "jscpd": "^5.4.2",
+    "knip": "^6.44.1",
+    "lint-staged": "^17.6.0",
+    "typescript": "^7.0.2"
+  },
+  "trustedDependencies": []
+}
