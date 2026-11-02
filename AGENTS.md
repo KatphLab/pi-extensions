@@ -15,13 +15,15 @@ Ask the user before modifying quality-gate configuration: `.dependency-cruiser.t
 - Make the smallest complete change and remove obsolete paths when replacing behavior.
 - Include dependency rationale plus security and license impact in the PR or commit.
 - Update documentation when public behavior or contributor workflows change.
-- Use `YYYY-MM-DD` headings for changelog entries, not version numbers.
+- Use `YYYY-MM-DD` changelog headings, not version numbers; summarize each change in at most one concise, single-line bullet without sub-bullets or implementation detail.
 - Normalize unknown thrown values to `Error` at module boundaries. Keep user-facing errors safe and actionable while preserving useful developer diagnostics.
 - Do not introduce dynamic code evaluation, unsafe shell execution, or hardcoded secrets.
 
 ## Verification
 
-- Cover changed behavior, state transitions, contracts, and reachable errors.
+- Keep the smallest test suite that protects meaningful behavior, contracts, state transitions, and reachable errors; avoid redundant, implementation-detail, or coverage-only tests.
+- Prefer updating existing tests; add new tests or test files only when existing coverage cannot clearly protect distinct behavior.
+- After TDD, remove temporary or redundant tests; retain a new test only when it protects required functionality or a meaningful regression.
 - Run targeted verification and `bun run check` before claiming completion.
 - Preserve 90% line and function coverage and the inherited static-analysis gates. Biome rejects focused/skipped tests; Semgrep rejects todo tests.
 - Semgrep runs separately in CI; run `semgrep scan --config .semgrep.yml --error .` locally when security rules or affected code change.
