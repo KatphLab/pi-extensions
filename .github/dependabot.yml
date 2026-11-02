@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "22:00"
+      timezone: "Etc/UTC"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]

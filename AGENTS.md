@@ -2,7 +2,7 @@
 
 - Use Bun only for package management and repository scripts: `bun install`, `bun run <script>`, and `bunx --no-install <tool>`.
 - Use Bun's built-in test runner; `bun run test:ci` enforces line and function coverage.
-- Work on a descriptive feature branch rather than `main`; use `.worktrees/` for isolated worktrees.
+- Create a descriptive feature branch only when the current branch is `main`. Otherwise, continue on the current branch unless the user explicitly requests a different branch.
 - Use focused `<type>(<scope>): <why>` commits.
 
 ## Protected tooling
