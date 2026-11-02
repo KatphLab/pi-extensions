@@ -68,6 +68,18 @@ export function resolveShape(id: string, api: string, text: string): Shape {
   }
 }
 
+/** Preserve missing glyphs as readable code points before archive pagination. */
+export async function escapeUnsupportedGlyphs(
+  text: string,
+  shape: Shape,
+): Promise<string> {
+  const font = await loadFont(shape.font)
+  return Array.from(text, (char) => {
+    const code = char.codePointAt(0) ?? 0
+    return char === '█' || font.has(code) ? char : `\\u{${code.toString(16)}}`
+  }).join('')
+}
+
 /** OMP's black-ink alpha blend and cell origins, applied to pre-rasterized glyphs. */
 function drawGlyph(
   pixels: Buffer,

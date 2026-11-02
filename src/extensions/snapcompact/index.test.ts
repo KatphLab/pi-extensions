@@ -118,10 +118,10 @@ function eventForBranch(): SessionBeforeCompactEvent {
   }
 }
 
-function seed(): string {
+function seed(history = 'history '): string {
   const root = session.appendMessage({
     role: 'user',
-    content: `ORIGINAL TASK ${'history '.repeat(20_000)}`,
+    content: `ORIGINAL TASK ${history.repeat(20_000)}`,
     timestamp: 1,
   })
   session.appendMessage({
@@ -170,11 +170,14 @@ it('loads snapcompact as the package’s only extension through Pi’s manifest 
   ).toEqual([])
 })
 
-it('round-trips real PNG archives through Pi and follows the active branch', async () => {
-  const root = seed()
+it('round-trips Unicode history through real PNG archives and follows the active branch', async () => {
+  const root = seed('history مرحبا ✅ 🚀 你好 ')
   const result = await compactBranch()
   const archive = getArchive(result.details)
   expect(archive?.frames.length).toBeGreaterThan(0)
+  expect(archive?.source).toContain('\\u{645}\\u{631}\\u{62d}\\u{628}\\u{627}')
+  expect(archive?.source).toContain('\\u{2705} \\u{1f680} 你好')
+  expect(archive?.source).not.toContain('مرحبا')
   const messages = session.buildSessionContext().messages
   const projected = await runner.emitContext(messages)
   const archived = projected.find((message) => message.role === 'custom')

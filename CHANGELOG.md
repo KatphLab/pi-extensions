@@ -2,6 +2,8 @@
 
 ## 2026-11-02
 
+- Preserve unsupported Unicode characters as readable escapes instead of cancelling bitmap compaction.
+
 - Check dependencies weekly with Dependabot and open PRs for major and minor updates, ignoring patch-only updates.
 
 - Trigger compaction at 70% context usage and always use Snapcompact, cancelling instead of falling back to LLM summaries.

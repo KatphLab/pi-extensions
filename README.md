@@ -55,7 +55,7 @@ Snapcompact triggers compaction after a turn when context usage reaches **70%** 
 | `/compact` with an image-capable model                                     | Locally archive older text as PNG frames            |
 | `/compact` with instructions, such as `/compact focus on unresolved tasks` | Use Snapcompact; summary instructions are ignored   |
 | Compaction with a text-only model or no selected model                     | Cancel; select an image-capable model and retry     |
-| Rendering failure, unsupported glyphs, or an exceeded frame-byte budget    | Cancel with an error; no LLM summarization fallback |
+| Rendering failure or an exceeded frame-byte budget                         | Cancel with an error; no LLM summarization fallback |
 
 ### How it works
 
@@ -75,7 +75,7 @@ The portable renderer uses bundled bitmap fonts, with no native addon, external 
 Bitmap compaction is **not a lossless backup**:
 
 - Thinking and original image attachments are omitted. Tool arguments and results retain at most 2,000 characters of content each, plus a truncation notice.
-- ANSI escapes are stripped, and newline runs become `█`. Non-ASCII text uses bundled Silver glyphs; unsupported glyphs cancel compaction. Image-reading accuracy depends on the model.
+- ANSI escapes are stripped, and newline runs become `█`. Non-ASCII text uses bundled Silver glyphs; characters missing from the selected font are preserved as readable `\u{...}` code-point escapes before applying archive limits. Image-reading accuracy depends on the model.
 - Archives contain at most **five frames** and **3 MB of base64 frame data**. Frame count is further limited to estimated budgets of 10% of the model window and 20% of the pre-compaction context, using 5,024 tokens per frame. These are planning estimates, not billing guarantees.
 - History beyond the archive’s text capacity is omitted with an explicit character-count notice. Small token budgets can leave only the text edges, with no frames.
 - Switching to a text-only model sends the bounded archive source as text, which can increase context usage until the next compaction.
