@@ -21,6 +21,7 @@ Ask the user before modifying quality-gate configuration: `.dependency-cruiser.t
 
 ## Verification
 
+- When reviewing test changes, use [.agents/skills/pruning-unit-tests/SKILL.md](.agents/skills/pruning-unit-tests/SKILL.md).
 - Keep the smallest test suite that protects meaningful behavior, contracts, state transitions, and reachable errors; avoid redundant, implementation-detail, or coverage-only tests.
 - Prefer updating existing tests; add new tests or test files only when existing coverage cannot clearly protect distinct behavior.
 - After TDD, remove temporary or redundant tests; retain a new test only when it protects required functionality or a meaningful regression.

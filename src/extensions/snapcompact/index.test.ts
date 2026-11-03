@@ -31,6 +31,7 @@ let model: ExtensionContext['model']
 let visionModel: NonNullable<ExtensionContext['model']>
 let render: RenderFrame
 let usage: ReturnType<ExtensionContext['getContextUsage']>
+let idle: boolean
 const compact = mock<(options?: CompactOptions) => void>()
 const notify = mock()
 
@@ -50,7 +51,7 @@ beforeAll(async () => {
   runner.bindCore(harness.runtime, {
     getModel: () => model,
     getScopedModels: () => [],
-    isIdle: () => true,
+    isIdle: () => idle,
     isProjectTrusted: () => true,
     getSignal: () => undefined,
     abort: () => {},
@@ -73,6 +74,7 @@ beforeEach(() => {
   })
   compact.mockClear()
   usage = undefined
+  idle = true
   notify.mockClear()
   runner.setUIContext({ ...runner.getUIContext(), notify }, 'tui')
 })
@@ -289,36 +291,44 @@ it('does not require a model or UI to load and preserves unrelated summaries', a
   expect(await runner.emitContext(messages)).toEqual(messages)
 })
 
-it('compacts at 70% after a turn, skips unknown usage, and prevents overlapping requests', async () => {
-  const endTurn = () =>
-    runner.emitBoundary(
-      {
-        type: 'turn_end',
-        turnIndex: 0,
-        message: { role: 'user', content: 'turn', timestamp: 1 },
-        messageEntryId: 'message',
-        toolResults: [],
-        toolResultEntryIds: [],
-        outcome: 'completed',
-      },
-      () => ({
-        contextEntries: [],
-        contextMessages: [],
-        llmMessages: [],
-        pendingMessages: [],
-        canContinue: false,
-      }),
-    )
-  await endTurn()
+it('compacts at 70% only when safely settled and prevents overlapping requests', async () => {
+  const settle = () => runner.emit({ type: 'agent_settled', aborted: false })
+  await settle()
   usage = { tokens: null, contextWindow: 200_000, percent: null }
-  await endTurn()
+  await settle()
   usage = { tokens: 139_999, contextWindow: 200_000, percent: 69.9995 }
-  await endTurn()
+  await settle()
   expect(compact).not.toHaveBeenCalled()
 
   usage = { tokens: 140_000, contextWindow: 200_000, percent: 70 }
-  await endTurn()
-  await endTurn()
+  idle = false
+  await runner.emitBoundary(
+    {
+      type: 'turn_end',
+      turnIndex: 0,
+      message: { role: 'user', content: 'turn', timestamp: 1 },
+      messageEntryId: 'message',
+      toolResults: [],
+      toolResultEntryIds: [],
+      outcome: 'completed',
+    },
+    () => ({
+      contextEntries: [],
+      contextMessages: [],
+      llmMessages: [],
+      pendingMessages: [],
+      canContinue: false,
+    }),
+  )
+  await runner.emit({ type: 'agent_end', messages: [] })
+  expect(compact).not.toHaveBeenCalled()
+  await runner.emit({ type: 'agent_settled', aborted: false })
+  expect(compact).not.toHaveBeenCalled()
+  idle = true
+  await runner.emit({ type: 'agent_settled', aborted: true })
+  expect(compact).not.toHaveBeenCalled()
+  await settle()
+  await settle()
   expect(compact).toHaveBeenCalledTimes(1)
   compact.mock.calls.at(-1)?.[0]?.onComplete?.({
     summary: '',
@@ -326,7 +336,7 @@ it('compacts at 70% after a turn, skips unknown usage, and prevents overlapping 
     tokensBefore: 140_000,
   })
   usage = { tokens: 150_000, contextWindow: 200_000, percent: 75 }
-  await endTurn()
+  await settle()
   expect(compact).toHaveBeenCalledTimes(2)
 
   const log = spyOn(console, 'error').mockImplementation(() => {})
@@ -340,7 +350,7 @@ it('compacts at 70% after a turn, skips unknown usage, and prevents overlapping 
     runner.setUIContext(undefined, 'json')
     options?.onError?.(new Error('failed'))
     expect(notify).toHaveBeenCalledTimes(1)
-    await endTurn()
+    await settle()
     expect(compact).toHaveBeenCalledTimes(3)
   } finally {
     log.mockRestore()

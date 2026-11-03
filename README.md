@@ -48,7 +48,7 @@ Build up a conversation in Pi, then run:
 /compact
 ```
 
-Snapcompact triggers compaction after a turn when context usage reaches **70%** or higher. It also handles Pi’s built-in `/compact` command and automatic compaction while loaded, always using Snapcompact rather than Pi’s LLM summarizer. Pi’s recent-message boundaries still apply; there is no separate configuration to maintain.
+Snapcompact triggers compaction at **70%** context usage or higher once the agent is fully idle, after thinking, tool calls, retries, and queued follow-ups have finished. Its 70% trigger never interrupts an active run and does not run after a user abort. During longer runs, Pi’s built-in automatic compaction can still run safely between completed turns. Snapcompact also handles that compaction and the built-in `/compact` command while loaded, always using Snapcompact rather than Pi’s LLM summarizer. Manual `/compact` remains immediate and can interrupt an active response. Pi’s recent-message boundaries still apply; there is no separate configuration to maintain.
 
 | Request                                                                    | Behavior                                            |
 | -------------------------------------------------------------------------- | --------------------------------------------------- |

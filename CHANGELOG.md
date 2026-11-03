@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-03
+
+- Check staged Markdown formatting and require test reviews to assess reuse of existing scenarios.
+- Defer Snapcompact’s 70% auto-compaction until the agent is fully idle so active work is not interrupted.
+
 ## 2026-11-02
 
 - Preserve unsupported Unicode characters as readable escapes instead of cancelling bitmap compaction.

@@ -43,7 +43,10 @@ export default function snapcompactExtension(
     })
   }
 
-  pi.on('turn_end', (_event, ctx) => {
+  // ctx.compact() is manual compaction: it aborts an active run without resuming it.
+  // Wait for final settlement, not turn_end or agent_end (both can have more work).
+  pi.on('agent_settled', (event, ctx) => {
+    if (event.aborted || !ctx.isIdle()) return
     const percent = ctx.getContextUsage()?.percent
     if (percent != null && percent >= 70) triggerCompaction(ctx)
   })
