@@ -1,0 +1,29 @@
+schema: 1
+kind: dag
+name: standalone
+goal: Deliver the answer export
+criteria: { answer: answer.ts exports answer equal to 42 }
+defaults: { profile: small, skills: [] }
+integration: { profile: small }
+review: { profile: large }
+limits: { nodeRetries: 0, repairCycles: 0 }
+nodes:
+  maker:
+    kind: agent
+    task: |
+      TASK: Export answer equal to 42 from answer.ts.
+      DELIVERABLE: answer.ts in the project worktree; proof.txt, outcome.json and handoff.md in the supplied artifacts directory.
+      SCOPE: Change only answer.ts. Write reports only in your supplied artifacts directory.
+      VERIFY: The declared check imports answer.ts and requires answer === 42.
+      STOP WHEN: The export, proof and reports are complete, or report a concrete blocker.
+    write: [answer.ts]
+    outputs: [proof.txt]
+    satisfies: [answer]
+    verify:
+      - id: answer
+        argv:
+          [
+            bun,
+            -e,
+            "import {answer} from './answer.ts'; if(answer!==42)process.exit(7)",
+          ]

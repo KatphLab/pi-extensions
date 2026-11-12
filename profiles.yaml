@@ -1,0 +1,7 @@
+profiles:
+  small:
+    model: opencode-go/deepseek-v4.1-flash:high
+    size: small
+  large:
+    model: openai/gpt-6.1-sol:high
+    size: large

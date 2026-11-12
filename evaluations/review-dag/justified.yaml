@@ -1,0 +1,81 @@
+schema: 1
+kind: dag
+name: justified
+# Synthetic review input, not a workflow to execute against this repository.
+goal: Independently assess request decoding correctness and storage correctness, then publish an importable issue list
+criteria:
+  decoding: Request decoding failures and cleanup are assessed with precise evidence
+  storage: Transaction failures and cleanup are assessed with precise evidence
+  simplicity: Decoding abstractions receive a separate simplicity assessment
+  consolidation: Findings retain all source locations and aspect provenance
+  import: The accepted issues are mapped to the consumer's CSV contract
+context: |
+  Report-only review of a synthetic pinned checkout. Read scope is contractual, not a sandbox.
+  Group by coherent responsibility and reasoning demands. Line totals include supporting context and inform attention review, not automatic splitting.
+  Request decoding and transaction storage have different resource lifecycles and trust boundaries.
+  Each correctness scope is 900 implementation lines + 300 tests + 100 contract lines = 1300 lines.
+  Their union is 2500 lines even with the shared contract counted once.
+  Simplicity is a distinct aspect from correctness, not a second opinion on reachable failures.
+  Agents write only named artifacts and outcome.json/handoff.md in supplied artifacts directories.
+  Controls contain outcome (claimed-complete|blocked|failed), summary, deliverables,
+  evidence [{criterion,paths}], findings [{summary,evidence,needsAuthor}].
+  Call validate_submission after writing outputs and controls. Missing evidence is blocked/inconclusive.
+  Source defects are ordinary findings. No project edits, installs, commands, delegation or scope expansion.
+  Reports state inspected ranges, gaps, and findings or explicit no-findings. Findings include stable IDs,
+  file/line locations, evidence, impact and recommendations. Preserve all originals in consolidation.
+defaults: { profile: large, skills: [] }
+review: { profile: large }
+limits: { concurrency: 3, nodeRetries: 0, repairCycles: 0 }
+nodes:
+  decoding:
+    kind: agent
+    references: [src/decode.ts, tests/decode.test.ts, docs/contracts.md]
+    write: []
+    satisfies: [decoding]
+    outputs: [report.json]
+    task: |
+      Correctness only: src/decode.ts:1-900, tests/decode.test.ts:1-300, docs/contracts.md:1-100.
+      Trace malformed-input handling and parser-resource cleanup. Exclude storage and simplicity.
+      Write report.json using the shared contract; finish with controls and validate_submission.
+  storage:
+    kind: agent
+    references: [src/storage.ts, tests/storage.test.ts, docs/contracts.md]
+    write: []
+    satisfies: [storage]
+    outputs: [report.json]
+    task: |
+      Correctness only: src/storage.ts:1-900, tests/storage.test.ts:1-300, docs/contracts.md:1-100.
+      Trace transaction rollback and resource cleanup. Exclude decoding and simplicity.
+      Write report.json using the shared contract; finish with controls and validate_submission.
+  decoding-design:
+    kind: agent
+    references: [src/decode.ts, docs/contracts.md]
+    write: []
+    satisfies: [simplicity]
+    outputs: [report.json]
+    task: |
+      Simplicity only: src/decode.ts:1-900, docs/contracts.md:1-100.
+      Assess speculative abstraction while preserving malformed-input safety. Exclude correctness findings.
+      Write report.json using the shared contract; finish with controls and validate_submission.
+  combine:
+    kind: agent
+    needs: [decoding, storage, decoding-design]
+    write: []
+    satisfies: [consolidation]
+    outputs: [combined.json]
+    task: |
+      Consume the three direct report.json artifacts only. Write combined.json with root-cause deduplication,
+      original findings, dispositions, locations, aspects and gaps. No source inspection.
+      Finish with controls and validate_submission.
+  publish:
+    kind: agent
+    needs: [combine]
+    write: []
+    satisfies: [import]
+    outputs: [issues.csv, mapping.json]
+    task: |
+      Consume combine/combined.json only. Produce the downstream CSV import with columns
+      id,priority,summary,locations and standard CSV quoting for commas, quotes and newlines.
+      mapping.json maps each CSV ID to every original finding ID/location and records omitted
+      non-actionable items with reasons. No new review or aggregation pass; this is a format conversion
+      required by the receiving issue importer. No source inspection. Finish with controls and validate_submission.

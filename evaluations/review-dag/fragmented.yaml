@@ -1,0 +1,99 @@
+schema: 1
+kind: dag
+name: fragmented
+# Synthetic review input, not a workflow to execute against this repository.
+goal: Assess simplicity of the request pipeline and correctness of its dispatch boundary without changing source
+criteria:
+  simplicity: Both halves of the request pipeline have evidence-based simplicity assessments
+  correctness: Dispatch has a separate reachable-failure assessment
+  consolidation: All findings and coverage are retained with aspect provenance in one report
+context: |
+  Report-only review of a synthetic pinned checkout. Read scope is contractual, not a sandbox.
+  Group by coherent responsibility and reasoning demands. Line totals include supporting context and inform attention review, not automatic splitting.
+  docs/contracts.md:1-100 is the only supporting document for every source assignment.
+  src/request/parse.ts and normalize.ts prepare requests for dispatch.ts and response.ts.
+  All four files share one request-lifecycle responsibility and each has 220 lines.
+  The two simplicity tasks use the same method and do not require independent opinions.
+  Correctness is a separate aspect and must remain separately assessed.
+  reports/manifest.json is an external frozen contract binding exact producer/consumer IDs.
+  The workflow-owned check validates those identities; changing them requires coordinated
+  contract updates and revalidation. Its implementation is not included in this YAML.
+  Agents write only their named artifacts and outcome.json/handoff.md in the supplied artifacts directory.
+  Controls contain outcome (claimed-complete|blocked|failed), summary, deliverables,
+  evidence [{criterion,paths}], findings [{summary,evidence,needsAuthor}].
+  After writing reports call validate_submission. Missing evidence means blocked or inconclusive;
+  source defects are findings, not workflow failures. No commands, delegation, project edits or installs.
+  Each review artifact states inspected ranges, gaps and findings or explicit no-findings.
+  Findings carry stable IDs, locations, evidence, impact and recommendations. Reducers preserve originals.
+defaults: { profile: large, skills: [] }
+review: { profile: large }
+limits: { concurrency: 3, nodeRetries: 0, repairCycles: 0 }
+nodes:
+  simplicity-input:
+    kind: agent
+    references:
+      [src/request/parse.ts, src/request/normalize.ts, docs/contracts.md]
+    write: []
+    satisfies: [simplicity]
+    outputs: [simplicity.json]
+    task: |
+      Assess simplicity only in src/request/parse.ts:1-220 and src/request/normalize.ts:1-220,
+      with docs/contracts.md:1-100. They prepare the same request dispatched by the next pair.
+      Exclude all other source and aspects. Write simplicity.json using the shared report contract.
+      Identify unnecessary machinery while preserving the public contract. Finish with controls and validate_submission.
+  simplicity-output:
+    kind: agent
+    references:
+      [src/request/dispatch.ts, src/request/response.ts, docs/contracts.md]
+    write: []
+    satisfies: [simplicity]
+    outputs: [simplicity.json]
+    task: |
+      Assess simplicity only in src/request/dispatch.ts:1-220 and src/request/response.ts:1-220,
+      with docs/contracts.md:1-100. They complete the request prepared by the previous pair.
+      Exclude all other source and aspects. Write simplicity.json using the shared report contract.
+      Identify unnecessary machinery while preserving the public contract. Finish with controls and validate_submission.
+  correctness-dispatch:
+    kind: agent
+    references:
+      [src/request/dispatch.ts, src/request/response.ts, docs/contracts.md]
+    write: []
+    satisfies: [correctness]
+    outputs: [correctness.json]
+    task: |
+      Trace reachable failures only in src/request/dispatch.ts:1-220 and src/request/response.ts:1-220,
+      with docs/contracts.md:1-100. Exclude simplicity and other source. Write correctness.json.
+      Keep concrete triggers and counterevidence; finish with controls and validate_submission.
+  aggregate:
+    kind: agent
+    needs: [simplicity-input, simplicity-output, correctness-dispatch]
+    write: []
+    outputs: [combined.json]
+    task: |
+      Consume the three direct report artifacts only. Deduplicate root causes while retaining all
+      source IDs, locations, aspects and coverage. Write combined.json with those originals and dispositions.
+      No source inspection. Finish with controls and validate_submission.
+  aggregate-copy:
+    kind: agent
+    needs: [aggregate]
+    write: []
+    outputs: [combined.json]
+    task: |
+      Consume only aggregate/combined.json. Deduplicate root causes while retaining all source IDs,
+      locations, aspects and coverage. Write combined.json with those originals and dispositions.
+      No new evidence, transformation or independent approval is assigned. No source inspection.
+      Finish with controls and validate_submission.
+  final:
+    kind: agent
+    needs: [aggregate-copy]
+    write: []
+    satisfies: [consolidation]
+    outputs: [review.md]
+    task: |
+      Consume aggregate-copy/combined.json only and publish the ranked narrative review.md.
+      Preserve separate correctness and simplicity results, cite all originals, and state gaps.
+      No source inspection. Finish with controls and validate_submission.
+    verify:
+      - id: frozen-report-contract
+        argv:
+          [bun, workflow-check.ts, reports/manifest.json, aggregate-copy, final]

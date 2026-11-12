@@ -42,7 +42,7 @@ export default {
       },
       to: {
         dependencyTypes: ['npm-dev'],
-        dependencyTypesNot: ['type-only'],
+        dependencyTypesNot: ['type-only', 'npm-peer'],
         pathNot: ['node_modules/@types/'],
       },
     },

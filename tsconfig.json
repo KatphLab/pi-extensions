@@ -24,6 +24,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "paths": {
+      "@dag/*": ["./src/dag/*"],
       "@lib/*": ["./src/lib/*"],
       "@utils/*": ["./src/utils/*"],
       "@config/*": ["./src/config/*"],

@@ -1,0 +1,355 @@
+schema: 1
+kind: dag
+name: authoring-draft
+goal: Review the declared decoder and storage scopes without changing source
+criteria:
+  standards: All selected implementation, caller and test ranges receive documented-rule assessment
+  correctness: All selected implementation, caller and test ranges receive reachable-failure assessment
+  simplicity: All selected application ranges receive a contract-preserving simplicity assessment
+  test-value: All selected tests and implementation context receive a behavioral-protection assessment
+  consolidation: Preserve every original finding, coverage status and separate aspect assessment
+context: |
+  Synthetic authoring input only. Do not execute against this repository.
+  Decoder header/body share dispatch.ts and the decode-input requirement.
+  Storage opening and transaction handling share storage-lifecycle but have distinct failure/cleanup scenarios.
+  Group each aspect by coherent responsibility and reasoning demands. Line totals include documents and inform attention review, not automatic splitting.
+  Standards assesses rules, correctness reachable failures, simplicity application structure without test bodies,
+  and test-value behavioral protection with implementation/caller context and pruning guidance.
+  Every agent writes its named artifacts and outcome.json/handoff.md in the supplied artifacts directory.
+  Controls contain outcome (claimed-complete|blocked|failed), summary, deliverables,
+  evidence [{criterion,paths}], findings [{summary,evidence,needsAuthor}].
+  Call validate_submission after writing all outputs and controls.
+  Reports include exact inspected scope/status, requirement coverage, stable finding IDs, aspect,
+  precise locations, evidence, impact, recommendation and gaps or explicit no-findings.
+  Missing evidence is blocked/inconclusive; code defects are normal findings.
+  No project writes, commands, delegation, installations, model calls or scope expansion.
+defaults: { profile: large, skills: [] }
+review: { profile: large }
+limits: { concurrency: 4, nodeRetries: 0, repairCycles: 0 }
+nodes:
+  standards--decode-header:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/decode/header.ts",
+        "tests/decode/header.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+      ]
+    write: []
+    satisfies: [standards]
+    outputs: [report.json]
+    task: |
+      Assess standards only. Responsibility: decode-header; requirement: decode-input.
+      Inspect only src/decode/header.ts:1-180, tests/decode/header.test.ts:1-260, src/decode/dispatch.ts:1-100, AGENTS.md:1-40.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  standards--decode-body:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/decode/body.ts",
+        "tests/decode/body.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+      ]
+    write: []
+    satisfies: [standards]
+    outputs: [report.json]
+    task: |
+      Assess standards only. Responsibility: decode-body; requirement: decode-input.
+      Inspect only src/decode/body.ts:1-200, tests/decode/body.test.ts:1-300, src/decode/dispatch.ts:1-100, AGENTS.md:1-40.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  standards--storage-open:
+    kind: agent
+    profile: small
+    references: ["src/store/open.ts", "tests/store/open.test.ts", "AGENTS.md"]
+    write: []
+    satisfies: [standards]
+    outputs: [report.json]
+    task: |
+      Assess standards only. Responsibility: storage-open; requirement: storage-lifecycle.
+      Inspect only src/store/open.ts:1-650, tests/store/open.test.ts:1-350, AGENTS.md:1-40.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  standards--storage-transaction:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/store/transaction.ts",
+        "tests/store/transaction.test.ts",
+        "AGENTS.md",
+      ]
+    write: []
+    satisfies: [standards]
+    outputs: [report.json]
+    task: |
+      Assess standards only. Responsibility: storage-transaction; requirement: storage-lifecycle.
+      Inspect only src/store/transaction.ts:1-650, tests/store/transaction.test.ts:1-350, AGENTS.md:1-40.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  correctness--decode-header:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/decode/header.ts",
+        "tests/decode/header.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [correctness]
+    outputs: [report.json]
+    task: |
+      Assess correctness only. Responsibility: decode-header; requirement: decode-input.
+      Inspect only src/decode/header.ts:1-180, tests/decode/header.test.ts:1-260, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  correctness--decode-body:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/decode/body.ts",
+        "tests/decode/body.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [correctness]
+    outputs: [report.json]
+    task: |
+      Assess correctness only. Responsibility: decode-body; requirement: decode-input.
+      Inspect only src/decode/body.ts:1-200, tests/decode/body.test.ts:1-300, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  correctness--storage-open:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/store/open.ts",
+        "tests/store/open.test.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [correctness]
+    outputs: [report.json]
+    task: |
+      Assess correctness only. Responsibility: storage-open; requirement: storage-lifecycle.
+      Inspect only src/store/open.ts:1-650, tests/store/open.test.ts:1-350, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  correctness--storage-transaction:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/store/transaction.ts",
+        "tests/store/transaction.test.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [correctness]
+    outputs: [report.json]
+    task: |
+      Assess correctness only. Responsibility: storage-transaction; requirement: storage-lifecycle.
+      Inspect only src/store/transaction.ts:1-650, tests/store/transaction.test.ts:1-350, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  simplicity--decode-header:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/decode/header.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [simplicity]
+    outputs: [report.json]
+    task: |
+      Assess simplicity only. Responsibility: decode-header; requirement: decode-input.
+      Inspect only src/decode/header.ts:1-180, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  simplicity--decode-body:
+    kind: agent
+    profile: large
+    references:
+      [
+        "src/decode/body.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+      ]
+    write: []
+    satisfies: [simplicity]
+    outputs: [report.json]
+    task: |
+      Assess simplicity only. Responsibility: decode-body; requirement: decode-input.
+      Inspect only src/decode/body.ts:1-200, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  simplicity--storage-open:
+    kind: agent
+    profile: large
+    references: ["src/store/open.ts", "AGENTS.md", "docs/contracts.md"]
+    write: []
+    satisfies: [simplicity]
+    outputs: [report.json]
+    task: |
+      Assess simplicity only. Responsibility: storage-open; requirement: storage-lifecycle.
+      Inspect only src/store/open.ts:1-650, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  simplicity--storage-transaction:
+    kind: agent
+    profile: large
+    references: ["src/store/transaction.ts", "AGENTS.md", "docs/contracts.md"]
+    write: []
+    satisfies: [simplicity]
+    outputs: [report.json]
+    task: |
+      Assess simplicity only. Responsibility: storage-transaction; requirement: storage-lifecycle.
+      Inspect only src/store/transaction.ts:1-650, AGENTS.md:1-40, docs/contracts.md:1-80.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  test-value--decode-header:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/decode/header.ts",
+        "tests/decode/header.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+        "guidance/pruning-tests.md",
+      ]
+    write: []
+    satisfies: [test-value]
+    outputs: [report.json]
+    task: |
+      Assess test-value only. Responsibility: decode-header; requirement: decode-input.
+      Inspect only src/decode/header.ts:1-180, tests/decode/header.test.ts:1-260, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80, guidance/pruning-tests.md:1-60.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  test-value--decode-body:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/decode/body.ts",
+        "tests/decode/body.test.ts",
+        "src/decode/dispatch.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+        "guidance/pruning-tests.md",
+      ]
+    write: []
+    satisfies: [test-value]
+    outputs: [report.json]
+    task: |
+      Assess test-value only. Responsibility: decode-body; requirement: decode-input.
+      Inspect only src/decode/body.ts:1-200, tests/decode/body.test.ts:1-300, src/decode/dispatch.ts:1-100, AGENTS.md:1-40, docs/contracts.md:1-80, guidance/pruning-tests.md:1-60.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  test-value--storage-open:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/store/open.ts",
+        "tests/store/open.test.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+        "guidance/pruning-tests.md",
+      ]
+    write: []
+    satisfies: [test-value]
+    outputs: [report.json]
+    task: |
+      Assess test-value only. Responsibility: storage-open; requirement: storage-lifecycle.
+      Inspect only src/store/open.ts:1-650, tests/store/open.test.ts:1-350, AGENTS.md:1-40, docs/contracts.md:1-80, guidance/pruning-tests.md:1-60.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  test-value--storage-transaction:
+    kind: agent
+    profile: small
+    references:
+      [
+        "src/store/transaction.ts",
+        "tests/store/transaction.test.ts",
+        "AGENTS.md",
+        "docs/contracts.md",
+        "guidance/pruning-tests.md",
+      ]
+    write: []
+    satisfies: [test-value]
+    outputs: [report.json]
+    task: |
+      Assess test-value only. Responsibility: storage-transaction; requirement: storage-lifecycle.
+      Inspect only src/store/transaction.ts:1-650, tests/store/transaction.test.ts:1-350, AGENTS.md:1-40, docs/contracts.md:1-80, guidance/pruning-tests.md:1-60.
+      Write report.json using the shared report contract. Exclude other aspects and source.
+      Finish with controls and validate_submission; unavailable required evidence is blocked/inconclusive.
+  reduce-1:
+    kind: agent
+    needs:
+      [
+        "standards--decode-header",
+        "standards--decode-body",
+        "standards--storage-open",
+        "standards--storage-transaction",
+        "correctness--decode-header",
+        "correctness--decode-body",
+        "correctness--storage-open",
+        "correctness--storage-transaction",
+      ]
+    write: []
+    outputs: [combined.json]
+    task: |
+      Consume the eight direct report.json artifacts only. Preserve all originals, scope/requirement status,
+      aspect provenance and explicit deduplication dispositions in combined.json. No source inspection.
+      Finish with controls and validate_submission; missing reports block completion.
+  reduce-2:
+    kind: agent
+    needs:
+      [
+        "simplicity--decode-header",
+        "simplicity--decode-body",
+        "simplicity--storage-open",
+        "simplicity--storage-transaction",
+        "test-value--decode-header",
+        "test-value--decode-body",
+        "test-value--storage-open",
+        "test-value--storage-transaction",
+      ]
+    write: []
+    outputs: [combined.json]
+    task: |
+      Consume the eight direct report.json artifacts only. Preserve all originals, scope/requirement status,
+      aspect provenance and explicit deduplication dispositions in combined.json. No source inspection.
+      Finish with controls and validate_submission; missing reports block completion.
+  synthesis:
+    kind: agent
+    needs: [reduce-1, reduce-2]
+    write: []
+    satisfies: [consolidation]
+    outputs: [review.md]
+    task: |
+      Consume only the two direct combined.json artifacts. Publish review.md with ranked per-aspect findings,
+      all original IDs/locations, explicit deduplication dispositions and coverage/requirement gaps.
+      Preserve separate aspect assessments. No source inspection or unperformed-check claims.
+      Finish with controls and validate_submission; missing reports block completion.

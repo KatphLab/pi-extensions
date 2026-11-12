@@ -7,17 +7,25 @@
   "pi": {
     "extensions": [
       "./src/extensions"
+    ],
+    "skills": [
+      "./skills"
     ]
   },
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "dag-cli": "./src/dag/cli.ts"
+  },
   "engines": {
     "bun": ">=1.4.4",
     "node": ">=24.0.0"
   },
   "packageManager": "bun@1.4.4",
   "scripts": {
+    "dag": "bun run src/dag/cli.ts",
+    "coverage:summary": "bun run scripts/coverage-summary.ts",
     "dev": "pi --extension .",
     "fonts:import": "bun run scripts/import-snapcompact-fonts.ts",
     "lint": "biome check --error-on-warnings .",
@@ -30,17 +38,17 @@
     "knip:fix": "knip --fix",
     "depcruise": "depcruise --config .dependency-cruiser.ts src",
     "dupcheck": "jscpd src",
-    "test": "bun test --timeout 10000",
-    "test:ci": "bun test --timeout 10000 --coverage",
-    "test:watch": "bun test --timeout 10000 --watch",
-    "test:coverage": "bun test --timeout 10000 --coverage"
+    "test": "bun test --timeout 10000 --only-failures",
+    "test:ci": "bun test --timeout 10000 --only-failures --coverage",
+    "test:watch": "bun test --timeout 10000 --only-failures --watch",
+    "test:coverage": "bun test --timeout 10000 --only-failures --coverage"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
-    "@earendil-works/pi-coding-agent": "^1.4.0",
+    "@earendil-works/pi-coding-agent": "^1.5.1",
     "@swc/core": "^1.16.21",
     "@types/bun": "^1.4.4",
     "@types/node": "^26.6.6",
@@ -54,6 +62,7 @@
   },
   "trustedDependencies": [],
   "dependencies": {
-    "@earendil-works/pi-schema": "1.5.0"
+    "@earendil-works/pi-schema": "1.5.0",
+    "yaml": "^2.9.1"
   }
 }

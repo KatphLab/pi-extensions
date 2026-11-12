@@ -2,9 +2,15 @@
 
 Independently loadable TypeScript extensions for [Pi](https://pi.dev), bundled as one package. Pi runs the source directly—no build step required.
 
-The collection currently includes **Snapcompact**, which turns older conversation text into compact PNG frames for image-capable models instead of generating an LLM summary.
+The collection includes **Snapcompact**, which turns older conversation text into compact PNG frames for image-capable models instead of generating an LLM summary, and **System prompt**, which adds shared working principles to each agent run.
 
-[Install](#install) · [Use Snapcompact](#use-snapcompact) · [Limits and privacy](#limits-and-privacy) · [Development](#development)
+The standalone **DAG workflow CLI** runs authored assignments with scoped Git acceptance, recorded checks, independent review and explicit recovery. Use `dag-cli review-dag path/to/workflow.yaml --profiles profiles.yaml` to review **only that single DAG YAML file** and suggest improvements to it. The bundled workflow lives in [`src/dag/builtins/review-dag.yaml`](src/dag/builtins/review-dag.yaml): three parallel investigations cover design/instructions, declared correctness/safety contracts, and structural efficiency, then consolidate actionable YAML edits into `review.md` before separate independent approval. Referenced code, repository files and commands are not inspected or executed. See the [authoring skill](skills/writing-dags/SKILL.md), [CLI operations guide](docs/dag-cli.md) and [two YAML examples](skills/writing-dags/examples/).
+
+`dag-cli review <file>` is an alias; a bare `review` no longer reviews the checkout. Execution profiles select the review models, not additional review evidence. The review generates no external profiles file and accepts no historical-run input. All bundled review stages use `large`; cost/time suggestions are structural hypotheses, not measured savings.
+
+The **writing-dags** skill starts with one coherent assignment, adds nodes and artifacts only for useful work, and validates the YAML locally. Paid `review-dag` review is optional, not a mandatory revision loop; initial execution approval and independent result review remain required. Its focused YAML reference is separate from CLI operations and recovery. In Pi, run `/skill:writing-dags` from the target project, or let Pi select it for a matching request. Use `/reload` if the package is already loaded.
+
+[Install](#install) · [Code-review DAG prompt](#code-review-dag-prompt) · [System prompt](#system-prompt) · [Use Snapcompact](#use-snapcompact) · [Limits and privacy](#limits-and-privacy) · [Development](#development)
 
 ## Install
 
@@ -39,6 +45,38 @@ pi install /absolute/path/to/pi-extensions
 Local installs load directly from the checkout without copying it. Run `bun install` there first.
 
 Use `pi config` to enable or disable individual extensions, or `pi remove <source>` to remove a package. Avoid loading an extension file separately when it is already enabled through the package.
+
+## Code-review DAG prompt
+
+Run `/code-review-dag` to ask the current agent to **create a DAG for reviewing code—not review the code itself**. Optional free-text arguments describe the scope, requirement, Git base, or DAG name:
+
+```text
+/code-review-dag
+/code-review-dag Review src/dag for semantic duplication and unnecessary complexity
+/code-review-dag Review changes since main against plans/retry-contract.md; DAG name: retry-review
+```
+
+The agent generates **`.pi/dags/<dag-name>.yaml` under the target project root**, for example `.pi/dags/retry-review.yaml`. The workflow is generated for that codebase, not added to application source or bundled into this extension. Workflow-owned supporting artifacts also stay under `.pi/dags/`; an existing DAG requires confirmation before replacement. Generated workflow artifacts are excluded from the code review inventory.
+
+The command sends an authoring prompt immediately when idle, or queues it as a follow-up when the agent is busy. It works without interactive dialogs and leaves editor drafts untouched. Authoring uses the current agent and incurs normal model charges; the extension itself does not scan files or launch a review workflow. Run `/reload` after updating an already-loaded package.
+
+The prompt groups review work by coherent responsibility, keeping related implementation, callers and tests together. Review aspects are questions rather than automatic nodes: one focused assignment can assess several aspects while keeping Standards and Spec conclusions distinct. Broader scopes split only at meaningful responsibility or attention boundaries, without file-count or line-count quotas.
+
+Duplication review compares behavior and control/data flow, including renamed logic that JSCPD misses. Assignments name their evidence and report inspection gaps. Outputs default to concise Markdown plus required runtime controls; coverage matrices, decomposition records, JSON report contracts and reducer trees are not default deliverables. Synthesis is added only when the requested result needs reconciliation across reports. Recommendations must show concrete impact and preserve justified abstractions and distinct regression tests.
+
+The design takes inspiration from [OMP’s `/review`](https://github.com/can1357/oh-my-pi/tree/main/packages/coding-agent/src/extensibility/custom-commands/bundled/review) (frozen targets, related-file assignments, exclusions, actionable evidence and producer/consumer checks) and the `code-review` skill’s separate Standards and Spec axes. It adapts those ideas into future DAG tasks instead of spawning reviewers immediately. Change reviews pin merge-base/commit evidence and distinguish introduced issues from existing ones; whole-codebase audits may report existing defects. Missing specs are explicit, and standards and spec assessments remain separate in the consolidated report.
+
+Invoking the command requests YAML authoring and local validation through the bundled **writing-dags** skill—not execution of the generated review or fixes to the reviewed code. Optional paid `review-dag` calls require a separate authorization and iteration budget; target DAG execution still needs initial approval and authorization. Missing configuration, dirty-checkout prerequisites and unreviewed areas must be reported rather than silently bypassed.
+
+The command and prompt live in [`src/extensions/code-review-dag/index.ts`](src/extensions/code-review-dag/index.ts), with no new dependencies or generic DAG runtime changes. Enable or disable the extension independently with `pi config`.
+
+## System prompt
+
+The bundled extension adds working principles for scope control, read-only advice, minimal complete changes, evidence, verification, preserving user work, and delegation. It uses Pi’s structured `before_agent_start` hook to add one named section, preserving Pi’s base prompt, project instructions, skills, and other extensions’ sections without duplicating its guidance on subsequent runs.
+
+The instructions live entirely in [`src/extensions/system-prompt/index.ts`](src/extensions/system-prompt/index.ts). Edit them there and run `/reload` in an active session; the updated guidance applies on the next run. No Pi installation changes, global prompt files, or additional dependencies are required. Package discovery loads this extension alongside Snapcompact; use `pi config` to disable it independently.
+
+These are model instructions, not enforced permissions or a sandbox. An extension that forces a complete system-prompt replacement can bypass structured sections, including this guidance.
 
 ## Use Snapcompact
 
@@ -105,14 +143,25 @@ pi --no-extensions --extension ./src/extensions/snapcompact/index.ts
 
 ```text
 src/
+  dag/                 # Standalone authored workflow CLI and behavioral tests
   extensions/
+    code-review-dag/
+      index.ts         # Slash command and bounded code-review DAG prompt
+      index.test.ts    # Authoring-only prompt and follow-up delivery checks
     snapcompact/
       index.ts         # Pi extension entry point
       *.ts             # Archive, serialization, and rendering modules
       *.test.ts        # Bun behavioral and integration tests
       fonts/           # Bitmap assets and attribution
+    system-prompt/
+      index.ts         # Bundled working principles and prompt hook
+      index.test.ts    # Prompt composition and repeated-run checks
   test-utils/          # Shared Pi extension test harness
 scripts/               # Maintainer utilities
+docs/dag-cli.md        # CLI installation, execution, monitoring, and recovery
+skills/writing-dags/   # Generic authoring and CLI review-and-revise skill
+  references/          # Focused DAG YAML authoring contract
+  examples/            # Single-assignment and parallel YAML examples
 ```
 
 To add an extension, create `src/extensions/<name>/index.ts` with a default factory receiving Pi’s `ExtensionAPI`. Register uniquely named commands, tools, or handlers in that factory, and keep private helpers and behavioral tests beside it. The package manifest discovers each extension directory automatically; no central registry is needed.
@@ -134,6 +183,10 @@ No custom workflow, additional secret, or dependency is required. Scheduled chec
 | `bun run test:watch` | Rerun tests as files change                                                           |
 | `bun run test:ci`    | Run tests with 90% line and function coverage gates                                   |
 | `bun run fix`        | Apply Biome and Knip fixes; review the resulting diff                                 |
+
+Test scripts hide passing test results with `--only-failures`, retaining failures and the run summary. Coverage reports go only to `coverage/lcov.info`, omitting the per-file console table while still enforcing 90% line and function coverage. Use `bun run test`, `bun run test:ci`, `bun run test:coverage`, or `bun run test:watch` for quiet results; direct `bun test` invocations still show passing tests.
+
+For a compact, one-line JSON coverage report, run `bun run coverage:summary` after `bun run test:ci`. Pass an exact source path, such as `bun run coverage:summary src/dag/run/run.ts`, to include that file’s uncovered line ranges. Percentages use hit/total counts (weighted across files); `null` means no measurable items. The command reads the existing LCOV report, which may be stale or partial after targeted tests; it does not run tests or enforce coverage gates.
 
 Semgrep runs separately in CI. Run it locally when changing security rules or affected code:
 

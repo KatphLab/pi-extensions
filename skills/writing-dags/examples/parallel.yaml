@@ -1,0 +1,78 @@
+schema: 1
+kind: dag
+name: parallel
+goal: Join two accepted branches of a diamond
+criteria: { value: joined.ts exports joined equal to 43 }
+defaults: { profile: small, skills: [] }
+integration: { profile: small }
+review: { profile: large }
+limits: { concurrency: 2, nodeRetries: 0, repairCycles: 0 }
+nodes:
+  contract:
+    kind: command
+    argv:
+      [bun, -e, "await Bun.write('contract.ts','export const base = 20\\n')"]
+    write: [contract.ts]
+    verify:
+      - id: contract
+        argv:
+          [
+            bun,
+            -e,
+            "import {base} from './contract.ts'; if(base!==20)process.exit(7)",
+          ]
+  left:
+    kind: command
+    needs: [contract]
+    argv:
+      [
+        bun,
+        -e,
+        "import {base} from './contract.ts'; await Bun.write('left.ts','export const left = '+(base+1)+'\\n')",
+      ]
+    write: [left.ts]
+    verify:
+      - id: left
+        argv:
+          [
+            bun,
+            -e,
+            "import {left} from './left.ts'; if(left!==21)process.exit(7)",
+          ]
+  right:
+    kind: command
+    needs: [contract]
+    argv:
+      [
+        bun,
+        -e,
+        "import {base} from './contract.ts'; await Bun.write('right.ts','export const right = '+(base+2)+'\\n')",
+      ]
+    write: [right.ts]
+    verify:
+      - id: right
+        argv:
+          [
+            bun,
+            -e,
+            "import {right} from './right.ts'; if(right!==22)process.exit(7)",
+          ]
+  join:
+    kind: command
+    needs: [left, right]
+    argv:
+      [
+        bun,
+        -e,
+        "import {left} from './left.ts'; import {right} from './right.ts'; await Bun.write('joined.ts','export const joined = '+(left+right)+'\\n')",
+      ]
+    write: [joined.ts]
+    satisfies: [value]
+    verify:
+      - id: joined
+        argv:
+          [
+            bun,
+            -e,
+            "import {joined} from './joined.ts'; if(joined!==43)process.exit(7)",
+          ]

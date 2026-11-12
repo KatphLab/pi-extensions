@@ -1,0 +1,640 @@
+{
+  "synthetic": true,
+  "scopePolicy": {
+    "basis": "Coherent responsibility, evidence density, trust boundaries and reasoning complexity; line totals inform attention review, not automatic splitting.",
+    "fanIn": 8
+  },
+  "requirements": {
+    "decode-input": "Header/body decoding dispatches valid requests and rejects malformed inputs without leaked parser resources.",
+    "storage-lifecycle": "Opening and transaction operations preserve connection ownership, cleanup and rollback."
+  },
+  "groups": [
+    {
+      "id": "decode-header",
+      "family": "decoder",
+      "implementation": {
+        "path": "src/decode/header.ts",
+        "start": 1,
+        "end": 180
+      },
+      "tests": {
+        "path": "tests/decode/header.test.ts",
+        "start": 1,
+        "end": 260
+      },
+      "callers": [
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "requirement": "decode-input"
+    },
+    {
+      "id": "decode-body",
+      "family": "decoder",
+      "implementation": {
+        "path": "src/decode/body.ts",
+        "start": 1,
+        "end": 200
+      },
+      "tests": {
+        "path": "tests/decode/body.test.ts",
+        "start": 1,
+        "end": 300
+      },
+      "callers": [
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "requirement": "decode-input"
+    },
+    {
+      "id": "storage-open",
+      "family": "storage",
+      "implementation": {
+        "path": "src/store/open.ts",
+        "start": 1,
+        "end": 650
+      },
+      "tests": {
+        "path": "tests/store/open.test.ts",
+        "start": 1,
+        "end": 350
+      },
+      "callers": [],
+      "requirement": "storage-lifecycle"
+    },
+    {
+      "id": "storage-transaction",
+      "family": "storage",
+      "implementation": {
+        "path": "src/store/transaction.ts",
+        "start": 1,
+        "end": 650
+      },
+      "tests": {
+        "path": "tests/store/transaction.test.ts",
+        "start": 1,
+        "end": 350
+      },
+      "callers": [],
+      "requirement": "storage-lifecycle"
+    }
+  ],
+  "docs": {
+    "rules": {
+      "path": "AGENTS.md",
+      "start": 1,
+      "end": 40
+    },
+    "contract": {
+      "path": "docs/contracts.md",
+      "start": 1,
+      "end": 80
+    },
+    "pruning": {
+      "path": "guidance/pruning-tests.md",
+      "start": 1,
+      "end": 60
+    }
+  },
+  "assignments": [
+    {
+      "id": "standards--decode-header",
+      "aspect": "standards",
+      "group": "decode-header",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/header.ts",
+          "start": 1,
+          "end": 180
+        },
+        {
+          "path": "tests/decode/header.test.ts",
+          "start": 1,
+          "end": 260
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "small"
+    },
+    {
+      "id": "standards--decode-body",
+      "aspect": "standards",
+      "group": "decode-body",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/body.ts",
+          "start": 1,
+          "end": 200
+        },
+        {
+          "path": "tests/decode/body.test.ts",
+          "start": 1,
+          "end": 300
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "small"
+    },
+    {
+      "id": "standards--storage-open",
+      "aspect": "standards",
+      "group": "storage-open",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/open.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/open.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "small"
+    },
+    {
+      "id": "standards--storage-transaction",
+      "aspect": "standards",
+      "group": "storage-transaction",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/transaction.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/transaction.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "small"
+    },
+    {
+      "id": "correctness--decode-header",
+      "aspect": "correctness",
+      "group": "decode-header",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/header.ts",
+          "start": 1,
+          "end": 180
+        },
+        {
+          "path": "tests/decode/header.test.ts",
+          "start": 1,
+          "end": 260
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "large"
+    },
+    {
+      "id": "correctness--decode-body",
+      "aspect": "correctness",
+      "group": "decode-body",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/body.ts",
+          "start": 1,
+          "end": 200
+        },
+        {
+          "path": "tests/decode/body.test.ts",
+          "start": 1,
+          "end": 300
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "large"
+    },
+    {
+      "id": "correctness--storage-open",
+      "aspect": "correctness",
+      "group": "storage-open",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/open.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/open.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "large"
+    },
+    {
+      "id": "correctness--storage-transaction",
+      "aspect": "correctness",
+      "group": "storage-transaction",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/transaction.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/transaction.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "large"
+    },
+    {
+      "id": "simplicity--decode-header",
+      "aspect": "simplicity",
+      "group": "decode-header",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/header.ts",
+          "start": 1,
+          "end": 180
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "large"
+    },
+    {
+      "id": "simplicity--decode-body",
+      "aspect": "simplicity",
+      "group": "decode-body",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/body.ts",
+          "start": 1,
+          "end": 200
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "large"
+    },
+    {
+      "id": "simplicity--storage-open",
+      "aspect": "simplicity",
+      "group": "storage-open",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/open.ts",
+          "start": 1,
+          "end": 650
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "large"
+    },
+    {
+      "id": "simplicity--storage-transaction",
+      "aspect": "simplicity",
+      "group": "storage-transaction",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/transaction.ts",
+          "start": 1,
+          "end": 650
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "large"
+    },
+    {
+      "id": "test-value--decode-header",
+      "aspect": "test-value",
+      "group": "decode-header",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/header.ts",
+          "start": 1,
+          "end": 180
+        },
+        {
+          "path": "tests/decode/header.test.ts",
+          "start": 1,
+          "end": 260
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "path": "guidance/pruning-tests.md",
+          "start": 1,
+          "end": 60
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "small"
+    },
+    {
+      "id": "test-value--decode-body",
+      "aspect": "test-value",
+      "group": "decode-body",
+      "family": "decoder",
+      "ranges": [
+        {
+          "path": "src/decode/body.ts",
+          "start": 1,
+          "end": 200
+        },
+        {
+          "path": "tests/decode/body.test.ts",
+          "start": 1,
+          "end": 300
+        },
+        {
+          "path": "src/decode/dispatch.ts",
+          "start": 1,
+          "end": 100
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "path": "guidance/pruning-tests.md",
+          "start": 1,
+          "end": 60
+        }
+      ],
+      "requirements": ["decode-input"],
+      "profile": "small"
+    },
+    {
+      "id": "test-value--storage-open",
+      "aspect": "test-value",
+      "group": "storage-open",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/open.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/open.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "path": "guidance/pruning-tests.md",
+          "start": 1,
+          "end": 60
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "small"
+    },
+    {
+      "id": "test-value--storage-transaction",
+      "aspect": "test-value",
+      "group": "storage-transaction",
+      "family": "storage",
+      "ranges": [
+        {
+          "path": "src/store/transaction.ts",
+          "start": 1,
+          "end": 650
+        },
+        {
+          "path": "tests/store/transaction.test.ts",
+          "start": 1,
+          "end": 350
+        }
+      ],
+      "docs": [
+        {
+          "path": "AGENTS.md",
+          "start": 1,
+          "end": 40
+        },
+        {
+          "path": "docs/contracts.md",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "path": "guidance/pruning-tests.md",
+          "start": 1,
+          "end": 60
+        }
+      ],
+      "requirements": ["storage-lifecycle"],
+      "profile": "small"
+    }
+  ]
+}

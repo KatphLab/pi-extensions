@@ -15,6 +15,7 @@ import {
   DefaultResourceLoader,
   type ExtensionContext,
   type ExtensionRunner,
+  formatSkillsForPrompt,
   type SessionBeforeCompactEvent,
   type SessionManager,
   SettingsManager,
@@ -148,28 +149,23 @@ async function compactBranch() {
   return compaction
 }
 
-it('loads snapcompact as the package’s only extension through Pi’s manifest discovery', async () => {
+it('advertises DAG authoring from an installed package outside its checkout', async () => {
   const root = resolve(import.meta.dir, '../../..')
   const loader = new DefaultResourceLoader({
     cwd: directory,
     agentDir: directory,
-    settingsManager: SettingsManager.inMemory(),
+    settingsManager: SettingsManager.inMemory({ packages: [root] }),
     noExtensions: true,
-    noSkills: true,
     noPromptTemplates: true,
     noThemes: true,
     noContextFiles: true,
-    additionalExtensionPaths: [root],
   })
   await loader.reload()
-  const loaded = loader.getExtensions()
-  expect(loaded.errors).toEqual([])
-  expect(loaded.extensions.map((extension) => extension.path)).toEqual([
-    join(root, 'src/extensions/snapcompact/index.ts'),
-  ])
+  const skills = loader.getSkills().skills
   expect(
-    loaded.extensions.flatMap((extension) => [...extension.commands.keys()]),
-  ).toEqual([])
+    skills.find((skill) => skill.name === 'writing-dags')?.sourceInfo.origin,
+  ).toBe('package')
+  expect(formatSkillsForPrompt(skills)).toContain('<name>writing-dags</name>')
 })
 
 it('round-trips Unicode history through real PNG archives and follows the active branch', async () => {

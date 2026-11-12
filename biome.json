@@ -23,6 +23,7 @@
         "noUselessEscapeInRegex": "error",
         "noUselessUndefined": "error",
         "useFlatMap": "error",
+        "useLiteralKeys": "off",
         "useWhile": "error",
         "noExcessiveCognitiveComplexity": {
           "level": "error",
@@ -33,7 +34,7 @@
         "noExcessiveLinesPerFunction": {
           "level": "error",
           "options": {
-            "maxLines": 80,
+            "maxLines": 200,
             "skipBlankLines": true
           }
         },
@@ -68,6 +69,13 @@
         "noReExportAll": "error"
       },
       "style": {
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": {
+            "maxLines": 1000,
+            "skipBlankLines": true
+          }
+        },
         "useAtIndex": "error",
         "useConsistentArrayType": "error",
         "useConsistentEnumValueType": "error",
@@ -139,7 +147,6 @@
       "linter": {
         "rules": {
           "complexity": {
-            "noExcessiveLinesPerFunction": "off",
             "noUselessUndefined": "off"
           },
           "performance": { "noBarrelFile": "off", "noReExportAll": "off" },
